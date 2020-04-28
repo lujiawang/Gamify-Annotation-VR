@@ -1,0 +1,59 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CharacterController : MonoBehaviour
+{
+    public Animator anim;
+    private bool isRun;
+    public Transform target;
+    public float rotateSpeed = 5;
+    public float moveSpeed = 5;
+
+    private DFSWalkAgent agent;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        agent = GetComponent<DFSWalkAgent>();
+        anim = GetComponent<Animator>();
+        isRun = false;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown("space"))
+        {
+            isRun = !isRun;
+            anim.SetBool("isRun", isRun);
+        }
+        if (isRun)
+        {
+            Vector3 lookAt = new Vector3(target.position.x - transform.position.x, transform.position.y, target.position.z - transform.position.z);
+            Quaternion rot = Quaternion.LookRotation(lookAt);
+
+            //Rotate
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotateSpeed * Time.deltaTime);
+            //Move
+            transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+
+        }
+        /*
+        long nodeid = agent.GetNext();
+        
+        List<GameObject> truthNodes = new List<GameObject>(GameObject.FindGameObjectsWithTag("Node"));
+        foreach(GameObject obj in truthNodes)
+        {
+            if(obj.name.Equals( nodeid.ToString()))
+            {
+                target = obj.transform;
+            }
+        }
+
+        //reached that target
+        agent.ArrivedAt(nodeid);
+        */
+    }
+    
+}
